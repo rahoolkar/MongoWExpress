@@ -4,11 +4,13 @@ let port = 8080;
 const mongoose = require('mongoose');
 const path = require("path");
 const Chat = require("./models/chat.js");
+const methodOverride = require('method-override')
 
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"/views"));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+app.use(methodOverride('_method'))
 
 //creating a connection
 async function main(){
@@ -60,8 +62,12 @@ app.get("/",(req,res)=>{
 
 //create route 
 app.post("/chat",(req,res)=>{
-    let {from,messege,to} = req.body;
-    const newUser = new Chat({from:from,messege:messege,to:to,created_on:new Date()});
+    let {from:sender,messege:msg,to:receiver} = req.body;
+    const newUser = new Chat({
+        from:sender,
+        messege:msg,
+        to:receiver,
+        created_on:new Date()});
     newUser.save().then((result)=>{
         res.redirect("/chat")
     }).catch((error)=>{
@@ -69,7 +75,37 @@ app.post("/chat",(req,res)=>{
     })
 })
 
+//getting the update route form
+app.get("/chat/:id/edit",(req,res)=>{
+    let {id} = req.params;
+    Chat.findById(id).then((result)=>{
+        let node = result;
+        res.render("edit.ejs",{node});
+    }).catch((error)=>{
+        console.log(error);
+    })
+})
 
+//patch route
+app.patch("/chat/:id",(req,res)=>{
+    let {id} = req.params;
+    console.log(req.body);
+    let{newmsg} = req.body;
+    Chat.findByIdAndUpdate(id,{messege:newmsg},{runValidators:true}).then((result)=>{
+        res.redirect("/chat");
+    }).catch((error)=>{
+        res.send(error)
+    });
+})
+
+app.delete("/chat/:id",(req,res)=>{
+    let {id} = req.params;
+    Chat.findByIdAndDelete(id).then(()=>{
+        res.redirect("/chat");
+    }).catch((error)=>{
+        res.send("Error");
+    })
+})
 
 app.listen(port,()=>{
     console.log("app is listening on port 8080")
