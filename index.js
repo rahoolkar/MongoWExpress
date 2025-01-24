@@ -98,6 +98,7 @@ app.patch("/chat/:id",(req,res)=>{
     });
 })
 
+//delete route
 app.delete("/chat/:id",(req,res)=>{
     let {id} = req.params;
     Chat.findByIdAndDelete(id).then(()=>{
@@ -107,6 +108,8 @@ app.delete("/chat/:id",(req,res)=>{
     })
 })
 
+
+//listen to the port
 app.listen(port,()=>{
     console.log("app is listening on port 8080")
 })
