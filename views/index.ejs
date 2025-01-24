@@ -5,27 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whatsapp</title>
     <style>
-        div{
-            border: 2px solid black;
-            border-radius: 20px;
-        }
         .box{
+            background-color: aqua;
+            border-radius: 20px;
             margin: 20px;
             padding: 20px;
         }
         .box{
             display: inline-block;
         }
+        .msg{
+            border-radius: 20px;
+            background-color: blueviolet;
+        }
     </style>
 </head>
 <body>
     <h1>Chats</h1>
+    <div>
+        <form action="/chat/new" method="get">
+                <button>Send New Messege</button>
+        </form>
+    </div>
     <div class="container">
         <% for(let chat of chats){ %>
             <div class="box">
                 <p>From:<%= chat.from %></p>
-                <div class="msg"><p>Messege: <%= chat.messege %></p></div>
+                <div class="msg"><p><%= chat.messege %></p></div>
                 <p>To: <%= chat.to %></p>
+                <hr>
             </div>
         <% } %>
     </div>

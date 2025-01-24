@@ -7,7 +7,8 @@ const Chat = require("./models/chat.js");
 
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"/views"));
-
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 
 //creating a connection
 async function main(){
@@ -40,7 +41,6 @@ main().then(()=>{
 //index route 
 app.get("/chat",(req,res)=>{
     Chat.find({}).then((result)=>{
-        console.log(result);
         let chats = result;
         res.render("index.ejs",{chats});
     }).catch((error)=>{
@@ -48,9 +48,28 @@ app.get("/chat",(req,res)=>{
     })
 })
 
+//geting new chat form
+app.get("/chat/new",(req,res)=>{
+    res.render("form.ejs");
+})
+
+//home path
 app.get("/",(req,res)=>{
     res.send("wow");
 })
+
+//create route 
+app.post("/chat",(req,res)=>{
+    let {from,messege,to} = req.body;
+    const newUser = new Chat({from:from,messege:messege,to:to,created_on:new Date()});
+    newUser.save().then((result)=>{
+        res.redirect("/chat")
+    }).catch((error)=>{
+        console.log(error);
+    })
+})
+
+
 
 app.listen(port,()=>{
     console.log("app is listening on port 8080")
